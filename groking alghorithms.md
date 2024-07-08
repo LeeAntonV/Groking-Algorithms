@@ -28,16 +28,18 @@ If we found our target in array then we return index of this value, otherwise we
 
 Assume we have a problem where we need to find **target** value in array of ints.
 
-`func simpleSearch(array []int, target int) int {`
-    `target := 2`
-    `for i := 0; i < len(array); i++{`
-        `if array[i] == target{`
-			`return i`
-        `}` 
-    `}`
-	 `return -1`
-`}`
+```
+func simpleSearch(array []int, target int) int {
+    target := 2
+    for i := 0; i < len(array); i++{
+        if array[i] == target{
+			return i
+        } 
+    }
+	 return -1
+}
 
+```
 Here is golang code example of solving this problem using .
 
 <font size=6>Binary search</font>
@@ -57,23 +59,26 @@ If **mid value** is bigger than target we cut right side of array, because all v
 
 Finally if we found no matches, function returns -1 as the answer.
 
-`func binarySearch(array []int, target int) int {`
-    `left := 0`
-    `right := len(array) - 1`
+```
+func binarySearch(array []int, target int) int {
+    left := 0
+    right := len(array) - 1
 
-    `for (left <= right){`
-        `mid := (left + right)/2`
-        `if array[mid] == target{`
-            `return mid`
-        `} else if array[mid] > target{`
-            `left = mid + 1`
-        `} else {`
-            `right = mid - 1`
-        `}`
-    `}`
+    for (left <= right){
+        mid := (left + right)/2
+        if array[mid] == target{
+            return mid
+        } else if array[mid] > target{
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
 
-    `return -1`
-`}`
+
+    return -1
+    }
+```
 
 Here is golang example for this problem using binary search.
 
