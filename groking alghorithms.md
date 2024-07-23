@@ -193,4 +193,103 @@ efficient than basic loops. This approach is used not to improve program's effic
 improve performance of programmer as it proposes more readable code solution.
 
 
-## Chapter 4
+# Chapter 4(Quick Sort)
+
+## Quick Sort
+
+Quick sort is one of the fastest algorithms to sort a list. It requires pivot number, that would be a value that all other values would be compared to, through out this iteration.
+Whole list is divided into two section: numbers that are less than pivot and numbers that are
+bigger than pivot. This process continues until length of list is less than 2, because array
+with length one is already sorted. After program reaches to base case, all numbers are taken from stack and putted into right place.
+
+Quick sort is usually being recursive, to make things more easy to read.
+
+![[Pasted image 20240723161408.png]]
+Graphical representation of Quick sort.
+
+```
+package main
+
+import "fmt"
+
+func main() {
+    arr := []int{5, 6, 2, 4, 3}
+
+    fmt.Println(quickSortStart(arr))
+}
+
+func partition(arr []int, left,right int) ([]int, int) {
+    pivot := arr[right]
+    i := left
+
+    for j:=i; j < right; j++{
+        if arr[j] < pivot{
+            arr[i], arr[j] = arr[j], arr[i]
+            i++
+        }
+    }
+
+    arr[i], arr[right] = arr[right], arr[i]
+    return arr, i
+}
+
+func quickSort(arr []int, left, right int) []int{
+    if left < right{
+        var p int
+
+        arr, p = partition(arr, left, right)
+        arr = quickSort(arr, left, p - 1)
+        arr = quickSort(arr, p + 1, right)
+    }
+    return arr
+}
+
+func quickSortStart(arr []int) []int {
+    return quickSort(arr, 0, len(arr) - 1)
+}
+```
+Example of Quick sort code in golang.
+
+![[quicksort.jpg]]
+
+Best Case and Average case are O(n * log n), however Worst Case is O(n^2), 
+because Quick Sort highly relies on how good is pivot number is and worst case 
+scenario for this algorithm would be already sorted array.
+
+# Chapter 5(Hash tables)
+
+## Hash table
+
+Hash table is a very useful data structure that was created for faster data search.
+Hash table allows you to assign key value to a actual value in memory and access
+it in ==O(1)== time complexity.
+
+**Requirements for Hash Table:**
+- Key values should be unique for each memory part, otherwise you want get access to value due to collision of key names
+- Hash Table(Hash map) structure should be assigned before its creation. That means
+   that  assigning of pair (1, 1) is not allowed for (string, int ) map.
+
+![[Pasted image 20240723162527.png]]
+
+```
+package main
+
+import "fmt"
+
+func main() {
+    hashmap := make(map[string]int)
+
+    hashmap["Anton"] = 1
+
+    fmt.Println(hashmap)
+    fmt.Println(hashmap["Anton"])
+}
+
+```
+Here is golang code representation of hasmap.
+
+# Chapter 6
+
+
+
+
