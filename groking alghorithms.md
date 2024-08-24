@@ -193,7 +193,7 @@ efficient than basic loops. This approach is used not to improve program's effic
 improve performance of programmer as it proposes more readable code solution.
 
 
-# Chapter 4(Quick Sort)
+# Chapter 4 (Quick Sort && Merge Sort)
 
 ## Quick Sort
 
@@ -204,7 +204,8 @@ with length one is already sorted. After program reaches to base case, all numbe
 
 Quick sort is usually being recursive, to make things more easy to read.
 
-![[Pasted image 20240723161408.png]]
+![[QuickSort2.png]]
+
 Graphical representation of Quick sort.
 
 ```
@@ -256,7 +257,74 @@ Best Case and Average case are O(n * log n), however Worst Case is O(n^2),
 because Quick Sort highly relies on how good is pivot number is and worst case 
 scenario for this algorithm would be already sorted array.
 
-# Chapter 5(Hash tables)
+## Merge sort
+
+Merge sort is divide and conquer sorting algorithm. It works by dividing array into two halves
+until length of this array will be 1(so it means that it is sorted). Than results are merged into
+one piece and this process continues until all array is merged.
+
+![[Pasted image 20240727164600.png]]
+This is graphical representation of merge sort.
+
+```
+package main
+
+import (
+    "fmt"
+)
+
+func main() {
+    arr := []int{2, 1, 15, 100, 13}
+
+    fmt.Println(mergeSort(arr))
+}
+
+func mergeSort(arr []int) []int{
+    if len(arr) < 2{
+        return arr
+    }
+
+    left := mergeSort(arr[:(len(arr)/2)])
+    right := mergeSort(arr[(len(arr)/2):])
+
+    return merge(left, right)
+}
+
+func merge(left, right []int) []int{
+    res := []int{}
+    i := 0
+    j := 0
+
+    for i < len(left) && j < len(right){
+        if left[i] < right[j]{
+            res = append(res, left[i])
+            i++
+        } else {
+            res = append(res, right[j])
+            j++
+        }
+    }
+
+    for ; i < len(left); i++{
+        res = append(res, left[i])
+    }
+
+    for ; j < len(right); j++{
+        res = append(res, right[j])
+    }
+
+    return res
+}
+
+```
+
+This is golang code representation of merge sort.
+
+Best Case, Average Case and Worst Case are the same: ==O(n * logn)==. That however does not
+imply that merge sort is fastest and most useful algorithm, as sometimes time for one
+iteration of merge sort can be much bigger than in other approaches.
+
+# Chapter 5 (Hash tables)
 
 ## Hash table
 
@@ -288,7 +356,453 @@ func main() {
 ```
 Here is golang code representation of hasmap.
 
-# Chapter 6
+# Chapter 6 (Graphs)
+
+## Graphs
+Graphs are physical representation of problem where we have queue of objects.
+We use enqueue to add object to end of queue and dequeue to delete first 
+element of queue. 
+
+**Graphs are using FIFO method(First In, First Out)**. For example stacks are using 
+**LIFO**(Last In, Last Out).
+
+![[Pasted image 20240725181306.png]]
+
+![[Pasted image 20240725181506.png]]
+
+==Graphs can be weighted and unweighted==. 
+
+**Weighted graph** is graph where each node has numerical value of distance(weight)
+between nodes.
+
+**Unweighted** graph is graph where each node does not have weight.
+
+## Breadth For Search 
+
+**BFS** answers two questions: Can we get from point A to point B?,
+What is a shortest path from A to B?
+
+In **BFS** we traverse with level-by-level manner, which means we are trying to find 
+value from upper nodes and ending in down nodes.
+
+```
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    IsSeller bool
+}
+
+func main() {
+    hashmap := make(map[string][]Person)
+
+    hashmap["Anton"] = []Person{Person{"Alice", false}, Person{"Bob", false}, Person{"Greg", false}}
+    hashmap["Alice"] = []Person{Person{"Kate", false}, Person{"Clark", false}}
+    hashmap["Bob"] = []Person{Person{"Brad", true}}
+    hashmap["Greg"] = []Person{}
+
+    searchQueue := hashmap["Anton"]
+    searched := []Person{}
+
+    for len(searchQueue) > 0 {
+        person := searchQueue[0]
+        searchQueue = searchQueue[1:]
+
+        if !contains(person, searched) {
+            if person.IsSeller {
+                fmt.Println(person.Name + " is Seller")
+                return
+            } else {
+                add(&searchQueue, hashmap[person.Name])
+                searched = append(searched, person)
+            }
+        }
+    }
+}
+
+func contains(p Person, arr []Person) bool {
+    for _, person := range arr {
+        if person == p {
+            return true
+        }
+    }
+    return false
+}
+
+func add(arr1 *[]Person, arr2 []Person) {
+    *arr1 = append(*arr1, arr2...)
+}
+```
+
+Here is golang code representation.
+
+Time complexity for BFS is ==O(V + E)==. Where V is number of vertices and E is number of 
+edges. Required space is also O(V).
+
+## Depth For Search
+
+==DFS== algorithm is a search algorithm for graphs. Unlike in BFS, in DFS we search in to deep 
+of the graph, until we hit the last node in current branch and backtrack.
+
+```
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    IsSeller bool
+}
+
+func main() {
+    hashmap := make(map[string][]Person)
+
+    hashmap["Anton"] = []Person{Person{"Alice", false}, Person{"Bob", false}, Person{"Greg", false}}
+    hashmap["Alice"] = []Person{Person{"Kate", false}, Person{"Clark", false}}
+    hashmap["Bob"] = []Person{Person{"Brad", true}}
+    hashmap["Greg"] = []Person{}
+
+    searchQueue := hashmap["Anton"]
+    searched := []Person{}
+
+    for len(searchQueue) > 0 {
+        person := searchQueue[len(searchQueue) - 1]
+        searchQueue = searchQueue[:len(searchQueue) - 1]
+        if !contains(person, searched){
+            if person.IsSeller{
+                fmt.Println(person.Name + "is seller!")
+                return 
+            } else {
+                add(&searchQueue, hashmap[person.Name])
+                searched = append(searched, person)
+            }
+        }
+    }
+}
+
+func contains(p Person, arr []Person) bool {
+    for _, person := range arr {
+        if person == p {
+            return true
+        }
+    }
+    return false
+}
+
+func add(arr1 *[]Person, arr2 []Person) {
+    *arr1 = append(*arr1, arr2...)
+}
+```
+
+Time complexity for DFS is O(V + E). Where V is number of vertices and E is number of 
+edges. Required space is O(V + E).
+# Chapter 7 (Dijkstra's && Bellman-Ford algorithm)
+
+## Dijkstra's algorithm
+**Dijkstra's algorithm** is an algorithm for weighted graphs.
+
+It search for more efficient path not by shortest amount of edges, but 
+by shortest amount of weight of the graph.
+
+This algorithm search for minimal weight for current node and for it's neighbors. We keep track of reversed nodes, to not repeat ourselves. It continues until we hit the final node, than we revert the path and return the shortest(with less weight) pass.
+
+Dijkstra's algorithm only works for non-negative weighted edges in graph.
+
+![[Pasted image 20240730005656.png]]
+
+In this problem we can pick most efficient path as according to algorithm, we can not
+process one node more than one time.
+
+Current graph problem:
+
+![[Pasted image 20240730004136.png]]
+
+```
+package main
+
+import (
+	"fmt"
+	"math"
+    "strings"
+)
+
+type Node struct {
+	name      string
+	neighbors map[string]int
+}
+
+type Graph struct {
+	nodes map[string]*Node
+}
+
+func NewGraph() *Graph {
+	return &Graph{nodes: make(map[string]*Node)}
+}
+
+func (g *Graph) AddEdge(from, to string, cost int) {
+	if _, ok := g.nodes[from]; !ok {
+		g.nodes[from] = &Node{name: from, neighbors: make(map[string]int)}
+	}
+
+	g.nodes[from].neighbors[to] = cost
+	if _, ok := g.nodes[to]; !ok {
+		g.nodes[to] = &Node{name: to, neighbors: make(map[string]int)}
+	}
+}
+
+func findLowestCostNode(costs map[string]float64, processed map[string]bool) string {
+	lowestCost := math.Inf(1)
+	var lowestCostNode string
+	for node, cost := range costs {
+		if cost < lowestCost && !processed[node] {
+			lowestCost = cost
+			lowestCostNode = node
+		}
+	}
+	return lowestCostNode
+}
+
+func GetOptimalPath(parents map[string]string, start, end string) string {
+	var path []string
+	node := end
+
+	for node != start {
+		path = append([]string{node}, path...)
+		node = parents[node]
+	}
+	path = append([]string{start}, path...)
+
+	return strings.Join(path, " -> ")
+}
+
+func main() {
+	graph := NewGraph()
+	graph.AddEdge("start", "a", 6)
+	graph.AddEdge("start", "b", 2)
+	graph.AddEdge("a", "fin", 1)
+	graph.AddEdge("b", "a", 7)
+	graph.AddEdge("b", "fin", 6)
+
+	infinity := math.Inf(1)
+	costs := map[string]float64{
+		"a":   6,
+		"b":   2,
+		"fin": infinity,
+	}
+
+	parents := map[string]string{
+		"a":   "start",
+		"b":   "start",
+		"fin": "",
+	}
+
+	processed := make(map[string]bool)
+
+	node := findLowestCostNode(costs, processed)
+	for node != "" {
+		cost := costs[node]
+		neighbors := graph.nodes[node].neighbors
+		for n, neighborCost := range neighbors {
+			newCost := cost + float64(neighborCost)
+			if costs[n] > newCost {
+				costs[n] = newCost
+				parents[n] = node
+			}
+		}
+		processed[node] = true
+		node = findLowestCostNode(costs, processed)
+	}
+
+    startNode := "start"
+	endNode := "fin"
+	optimalPath := GetOptimalPath(parents, startNode, endNode)
+	fmt.Println("Optimal Path:", optimalPath)
+}
+
+```
+
+This is golang code representation for Dijkstra's problem.
+
+
+## Bellman-Ford algorithm
+
+==Bellman-Ford== algorithm is one-sourced algorithm for weighted, directed graphs with 
+negative weights for edges. Bellman-Ford algorithm is way much slower than **Dijkstra's**
+algorithm, but allows us to solve problems with negative weights. 
+
+**Main Principle:**
+We first create pair array that will represent table with distances to each node. Starting
+node distance would be 0.  To find negative cycle we need to ==relax== edges |V| - 1 times,
+where **V** is amount of vertices in graph. 
+
+==Relaxing Edge== in context of this algorithm means putting current edge through following
+statement: ==distance[curr. vertice] + weight to next vertice < dist[next vertice]==
+If statement is satisfied, than we change next vertice's weight to sum of distance for
+current vertice and weight between those two.
+
+**Time Complexity** for this algorithm is O(E) for Best Case and O(E+V) for Worst And Average
+Cases.
+**Auxiliary Space**: O(V).
+
+```
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+var infinity = math.Inf(1)
+
+type Graph struct {
+    v int
+	graph [][]int
+}
+
+func NewGraph(v int) *Graph {
+    return &Graph{v: v, graph: [][]int{}}
+}
+
+func (g *Graph) addEdge(u, v, w int) {
+    g.graph = append(g.graph, []int{u, v, w})
+}
+
+func (g *Graph) BF (src int){
+    dist := make([]float64, g.v)
+
+    for i := range dist {
+		dist[i] = math.Inf(1)
+	}
+
+    dist[src] = 0
+
+    for i := 0; i < g.v - 1; i++{
+        u, v, w := g.graph[i][0], g.graph[i][1], g.graph[i][2]
+        if dist[u] != infinity && dist[u] + float64(w) < dist[v]{
+            dist[v] = dist[u] + float64(w)
+        }
+    }
+
+    for i := 0; i < g.v; i++{
+        u, v, w := g.graph[i][0], g.graph[i][1], g.graph[i][2]
+
+        if dist[u] != infinity && dist[u] + float64(w) < dist[v]{
+            fmt.Println("Negative cycle found")
+            return
+        }
+    }
+
+}
+
+func main() {
+	g := NewGraph(5)
+    g.addEdge(0, 1, -1)
+    g.addEdge(0, 2, 4)
+    g.addEdge(1, 2, 3)
+    g.addEdge(1, 3, 2)
+    g.addEdge(1, 4, 2)
+    g.addEdge(3, 2, 5)
+    g.addEdge(3, 1, 1)
+    g.addEdge(4, 3, -3)
+
+    g.BF(0)
+}
+```
+
+Here is golang code representation of Bellman-Ford algorithm.
+
+# Chapter 8 (Greedy algorithms)
+
+## Philosophy
+Philosophy of greedy algorithms is that your do not have to create algorithm that is
+100% efficient. It can be slower and do not return best solution possible, but it is
+still valid algorithm as this differences are not important for the current problem
+
+```
+package main
+
+import "fmt"
+
+func main() {
+    s := []string{"mt", "wa", "or", "id", "nv", "ut", "ca", "az"}
+    
+    statesNeeded := NewSet()
+    for _, st := range s {
+        statesNeeded.Add(st)
+    }
+
+    stations := make(map[string]*Set)
+    stations["kone"] = NewSet().Add("id", "nv", "ut")
+    stations["ktwo"] = NewSet().Add("wa", "id", "mt")
+    stations["kthree"] = NewSet().Add("or", "nv", "ca")
+    stations["kfour"] = NewSet().Add("nv", "ut")
+    stations["kfive"] = NewSet().Add("ca", "az")
+
+    final := []string{}
+
+    for len(statesNeeded.elements) > 0 {
+        bestStation := ""
+        statesCovered := NewSet()
+
+        for station, states := range stations {
+            covered := NewSet()
+
+            for state := range states.elements {
+                if statesNeeded.Contains(state) {
+                    covered.Add(state)
+                }
+            }
+
+            if len(covered.elements) > len(statesCovered.elements) {
+                bestStation = station
+                statesCovered = covered
+            }
+        }
+
+        final = append(final, bestStation)
+
+        for state := range statesCovered.elements {
+            statesNeeded.Remove(state)
+        }
+    }
+
+    fmt.Println(final)
+}
+
+type Set struct {
+    elements map[string]bool
+}
+
+func NewSet() *Set {
+    return &Set{elements: make(map[string]bool)}
+}
+
+func (s *Set) Add(elements ...string) *Set {
+    for _, e := range elements {
+        s.elements[e] = true
+    }
+    return s
+}
+
+func (s *Set) Remove(elements ...string) {
+    for _, e := range elements {
+        delete(s.elements, e)
+    }
+}
+
+func (s *Set) Contains(element string) bool {
+    return s.elements[element]
+}
+
+```
+
+This is greedy solution for problem where we need to find stations that cover biggest amount of states written in golang.
 
 
 
